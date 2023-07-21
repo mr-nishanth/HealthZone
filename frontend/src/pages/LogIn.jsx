@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import useAuthStore from '../store/AuthStore';
+import useAuthStore from '../store/useAuthStore';
 import { toast } from 'react-hot-toast';
 
 export function LogIn() {
@@ -23,7 +23,8 @@ export function LogIn() {
             toast.success('Login Successful');
             navigate('/dashboard');
         } else {
-            toast.error('Login error');
+            const message = result?.response?.data?.message ?? 'Login error';
+            toast.error(message);
         }
     };
 

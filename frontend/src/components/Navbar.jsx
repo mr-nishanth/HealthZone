@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, X, HeartPulse } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/AuthStore';
+import useAuthStore from '../store/useAuthStore';
 
 export function Navbar() {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ export function Navbar() {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        return navigate('/login');
     };
     return (
         <div className='relative w-full bg-slate-100  shadow-lg h-16'>

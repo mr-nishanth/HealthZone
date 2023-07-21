@@ -1,6 +1,6 @@
 import { BarChart, PersonStandingIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import useAuthStore from '../store/AuthStore';
+import useAuthStore from '../store/useAuthStore';
 
 export function SideBar() {
     const user = useAuthStore((state) => state.user);

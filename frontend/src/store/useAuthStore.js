@@ -8,6 +8,7 @@ const api = axios.create({
 
 const useAuthStore = create((set) => ({
     isAuthenticated: false,
+
     user: {},
     login: async (email, password) => {
         try {
@@ -19,6 +20,7 @@ const useAuthStore = create((set) => ({
             if (response.status === 200) {
                 set({
                     isAuthenticated: true,
+
                     user: response.data.userObj,
                 });
                 return response.data;
@@ -40,7 +42,6 @@ const useAuthStore = create((set) => ({
             console.log({ REGISTER_RESPONSE: response });
             if (response.status === 201) {
                 set({
-                    // isAuthenticated: true,
                     user: response.data.userObj,
                 });
                 return response.data;
@@ -56,12 +57,50 @@ const useAuthStore = create((set) => ({
             const response = await api.get('/api/v1/logout');
             console.log({ LOGOUT_RESPONSE: response });
             if (response.status === 200) {
-                set({ isAuthenticated: false, username: '', email: '' });
+                set({ isAuthenticated: false, user: {} });
                 return true;
             }
         } catch (error) {
             console.error('Error While Logout', error);
             return false;
+        }
+    },
+
+    // USER
+    getProfile: async () => {
+        try {
+            const response = await api.get('/api/v1/myprofile');
+            console.log({ PROFILE_RESPONSE: response });
+            if (response.status === 200) {
+                set({
+                    isAuthenticated: true,
+                    user: response.data.user,
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            return error;
+        }
+    },
+
+    updateProfile: async (username, email, mobile) => {
+        try {
+            const response = await api.put('/api/v1/update', {
+                name: username,
+                email,
+                mobile,
+            });
+            console.log({ UPDATE_PROFILE_RESPONSE: response });
+            if (response.status === 200) {
+                set({
+                    user: response.data.user,
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error('Update Profile failed:', error);
+            return error;
         }
     },
 }));

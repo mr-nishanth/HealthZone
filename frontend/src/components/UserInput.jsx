@@ -1,4 +1,4 @@
-export function UserInput({ inputLabel, inputType }) {
+export function UserInput({ inputLabel, inputType, value }) {
     return (
         <div className='w-full md:w-1/3'>
             <label
@@ -12,6 +12,7 @@ export function UserInput({ inputLabel, inputType }) {
                 type={inputType}
                 placeholder='Enter your name'
                 id={inputLabel}
+                value={value}
             ></input>
             <p className='mt-1 text-xs text-gray-500'>
                 *This field is required

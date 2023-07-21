@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { SideBar } from '../components/SideBar';
 import { UserInput } from '../components/UserInput';
+import useAuthStore from '../store/AuthStore';
 
 const Profile = () => {
     const [editProfile, setEditProfile] = useState(false);
+    const [user] = useAuthStore((state) => [state.user]);
 
     return (
         <div className='flex  h-[79vh] w-full'>
@@ -25,14 +27,17 @@ const Profile = () => {
                             <UserInput
                                 inputLabel='Username'
                                 inputType='text'
+                                value={user.name}
                             />
                             <UserInput
                                 inputLabel='Email'
                                 inputType='email'
+                                value={user.email}
                             />
                             <UserInput
                                 inputLabel='Mobile Number'
                                 inputType='text'
+                                value={user.mobile}
                             />
                             <button
                                 type='button'
@@ -46,15 +51,15 @@ const Profile = () => {
                     <div className='flex-col justify-start items-center m-6'>
                         <div className='flex justify-start items-center mb-2'>
                             <h4>Username : </h4>
-                            <p> Nishanth</p>
+                            <p> {user.name}</p>
                         </div>
                         <div className='flex justify-start items-center mb-2'>
                             <h4>Email : </h4>
-                            <p> nishanthtemp@gmail.com</p>
+                            <p> {user.email}</p>
                         </div>
                         <div className='flex justify-start items-center mb-2'>
                             <h4>Mobile : </h4>
-                            <p> 9876543210</p>
+                            <p> {user.mobile}</p>
                         </div>
                     </div>
                 )}

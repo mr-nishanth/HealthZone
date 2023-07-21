@@ -1,7 +1,36 @@
 import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import useAuthStore from '../store/AuthStore';
+import { toast } from 'react-hot-toast';
 export function SignUp() {
+    const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
+    const [user, isAuthenticated, registerUser] = useAuthStore((state) => [
+        state.user,
+        state.isAuthenticated,
+        state.register,
+    ]);
+    console.log({ user });
+
+    const onSubmit = async (data) => {
+        const { username, password, email, mobile } = data;
+        const result = await registerUser(username, password, email, mobile);
+
+        console.log({ REGISTER: result });
+        console.log({ isAuthenticated });
+        if (result.success) {
+            toast.success('Register Successful');
+            navigate('/login');
+        } else {
+            toast.error('Register error');
+        }
+    };
+
     return (
         <div className='h-[79vh] flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
             <div className='xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md'>
@@ -18,8 +47,7 @@ export function SignUp() {
                     </Link>
                 </p>
                 <form
-                    action='#'
-                    method='POST'
+                    onSubmit={handleSubmit(onSubmit)}
                     className='mt-8'
                 >
                     <div className='space-y-5'>
@@ -35,9 +63,15 @@ export function SignUp() {
                                 <input
                                     className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
                                     type='text'
-                                    placeholder='Full Name'
                                     id='name'
-                                ></input>
+                                    {...register('username', {
+                                        required: 'Username is required',
+                                    })}
+                                    placeholder='Username'
+                                />
+                                {errors.username && (
+                                    <p>{errors.username.message}</p>
+                                )}
                             </div>
                         </div>
                         <div>
@@ -54,7 +88,34 @@ export function SignUp() {
                                     type='email'
                                     placeholder='Email'
                                     id='email'
-                                ></input>
+                                    {...register('email', {
+                                        required: 'Email is required',
+                                    })}
+                                />
+                                {errors.email && <p>{errors.email.message}</p>}
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                htmlFor='mobile'
+                                className='text-base font-medium text-gray-900'
+                            >
+                                {' '}
+                                Mobile Number{' '}
+                            </label>
+                            <div className='mt-2'>
+                                <input
+                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
+                                    type='text'
+                                    placeholder='Mobile Number'
+                                    id='mobile'
+                                    {...register('mobile', {
+                                        required: 'Mobile Number is required',
+                                    })}
+                                />
+                                {errors.mobile && (
+                                    <p>{errors.mobile.message}</p>
+                                )}
                             </div>
                         </div>
                         <div>
@@ -73,12 +134,18 @@ export function SignUp() {
                                     type='password'
                                     placeholder='Password'
                                     id='password'
-                                ></input>
+                                    {...register('password', {
+                                        required: 'Password is required',
+                                    })}
+                                />
+                                {errors.password && (
+                                    <p>{errors.password.message}</p>
+                                )}
                             </div>
                         </div>
                         <div>
                             <button
-                                type='button'
+                                type='submit'
                                 className='inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80'
                             >
                                 Create Account{' '}

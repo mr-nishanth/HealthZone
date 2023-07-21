@@ -1,7 +1,10 @@
 import { BarChart, PersonStandingIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useAuthStore from '../store/AuthStore';
 
 export function SideBar() {
+    const user = useAuthStore((state) => state.user);
+    console.log({ user });
     return (
         <aside className='flex h-[80vh] w-64 flex-col overflow-y-auto border-r bg-white px-5 py-8'>
             <div className='mt-6 flex flex-1 flex-col justify-between'>
@@ -39,8 +42,8 @@ export function SideBar() {
                 </nav>
                 <div className='mt-6'>
                     <span className='text-sm font-medium text-gray-700'>
-                        Username : Nishanth <br />
-                        Email : nishanthtemp@gmail.com
+                        Username : {user.name} <br />
+                        Email : {user.email}
                     </span>
                 </div>
             </div>

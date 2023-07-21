@@ -1,7 +1,9 @@
 import { HeartPulseIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
 
 export function Footer() {
+    const user = useAuthStore((state) => state.user);
     return (
         <section className='relative overflow-hidden bg-white py-8'>
             <div className='container relative z-10 mx-auto px-4'>
@@ -11,7 +13,7 @@ export function Footer() {
                             <div className='inline-flex items-center'>
                                 <HeartPulseIcon />
                                 <span className='ml-4 text-lg font-bold'>
-                                    Health Home
+                                    {user && user?.name}
                                 </span>
                             </div>
                         </Link>
@@ -47,7 +49,7 @@ export function Footer() {
                                     className='font-medium text-gray-600 hover:text-gray-700'
                                     href='#'
                                 >
-                                    Contact Us
+                                    Contact Us [{user && user?.mobile}]
                                 </a>
                             </li>
                         </ul>

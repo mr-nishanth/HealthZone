@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import useAuthStore from '../store/AuthStore';
+import useAuthStore from '../store/useAuthStore';
 import { toast } from 'react-hot-toast';
 export function SignUp() {
     const navigate = useNavigate();

@@ -6,7 +6,13 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { Toaster } from 'react-hot-toast';
+import useAuthStore from './store/AuthStore';
+import { useEffect } from 'react';
 export default function App() {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    console.log({ isAuthenticated });
+    useEffect(() => {}, []);
     return (
         <>
             <BrowserRouter>
@@ -24,16 +30,21 @@ export default function App() {
                         path='/login'
                         element={<LogIn />}
                     />
-                    <Route
-                        path='/dashboard'
-                        element={<Dashboard />}
-                    />
-                    <Route
-                        path='/profile'
-                        element={<Profile />}
-                    />
+                    {isAuthenticated && (
+                        <>
+                            <Route
+                                path='/dashboard'
+                                element={<Dashboard />}
+                            />
+                            <Route
+                                path='/profile'
+                                element={<Profile />}
+                            />
+                        </>
+                    )}
                 </Routes>
                 <Footer />
+                <Toaster />
             </BrowserRouter>
         </>
     );

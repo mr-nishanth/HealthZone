@@ -6,10 +6,13 @@ const api = axios.create({
     withCredentials: true,
 });
 
-const useAuthStore = create((set) => ({
+const initialState = {
     isAuthenticated: false,
-
     user: {},
+    users: [],
+};
+const useAuthStore = create((set) => ({
+    ...initialState,
     login: async (email, password) => {
         try {
             const response = await api.post('/api/v1/login', {
@@ -100,6 +103,23 @@ const useAuthStore = create((set) => ({
             }
         } catch (error) {
             console.error('Update Profile failed:', error);
+            return error;
+        }
+    },
+
+    // Admin
+    getAllUser: async () => {
+        try {
+            const response = await api.get('/api/v1/admin/users');
+            console.log({ GET_ALL_USER_RESPONSE: response });
+            if (response.status === 200) {
+                set({
+                    users: response.data.users,
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error('Get all User failed:', error);
             return error;
         }
     },

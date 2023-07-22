@@ -27,7 +27,8 @@ export function SignUp() {
             toast.success('Register Successful');
             navigate('/login');
         } else {
-            toast.error('Register error');
+            const message = result?.response?.data?.message ?? 'Register error';
+            toast.error(message);
         }
     };
 

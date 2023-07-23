@@ -1,41 +1,93 @@
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'react-hot-toast';
 import useAuthStore from '../store/useAuthStore';
-// import { toast } from 'react-hot-toast';
+import Input from '../components/Input';
+import registerSchema from '../schemas/registerSchema';
+import { shallow } from 'zustand/shallow';
+
+const initialValue: SignUp = {
+    name: '',
+    email: '',
+    mobile: '',
+    password: '',
+};
+
+const inputTypes: InputTypes[] = [
+    {
+        id: 'name',
+        label: 'User Name',
+        type: 'text',
+    },
+    {
+        id: 'email',
+        label: 'Email Address',
+        type: 'email',
+    },
+    {
+        id: 'mobile',
+        label: 'Mobile Number',
+        type: 'tel',
+    },
+    {
+        id: 'password',
+        label: 'Password',
+        type: 'password',
+    },
+];
 
 const SignUp = () => {
     const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
-        formState: { errors },
-    } = useForm();
-    const [user, isAuthenticated, registerUser] = useAuthStore((state) => [
-        state.user,
-        state.isAuthenticated,
-        state.register,
-    ]);
+        formState: { errors, isLoading },
+    } = useForm<FieldValues>({
+        defaultValues: initialValue,
+        resolver: zodResolver(registerSchema),
+    });
+
+    const [user, isAuthenticated, registerUser] = useAuthStore(
+        (state) => [state.user, state.isAuthenticated, state.register],
+        shallow
+    );
+    console.log({ isAuthenticated });
+    if (isAuthenticated) {
+        navigate('/dashboard');
+        return;
+    }
     console.log({ user });
 
-    const onSubmit = async (data) => {
-        const { username, password, email, mobile } = data;
-        const result = await registerUser(username, password, email, mobile);
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        const { name, password, email, mobile } = data;
+        toast.loading('Registering User ⌛', { id: '1' });
 
-        console.log({ REGISTER: result });
+        const result = await registerUser(name, password, email, mobile);
+
+        // console.log({ REGISTER: result });
         console.log({ isAuthenticated });
-        if (result.success) {
-            // toast.success('Register Successful');
+
+        if (result?.success) {
+            const message =
+                result?.message ?? 'User registered successfully 🚀';
+            toast.success(message, { id: '1' });
             navigate('/login');
         } else {
-            const message = result?.response?.data?.message ?? 'Register error';
-            // toast.error(message);
+            const message =
+                result?.message ?? 'Error in while registering user 🥲';
+
+            toast.error(message, {
+                id: '1',
+            });
         }
     };
 
     return (
-        <div className='h-[79vh] flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-            <div className='xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md'>
+        <div className='h-[83vh] flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+            <div className='bg-slate-100 px-4 py-8 shadow-xl sm:rounded-lg sm:px-10 xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md'>
                 <h2 className='text-2xl font-bold leading-tight text-black'>
                     Sign up to create account
                 </h2>
@@ -45,7 +97,7 @@ const SignUp = () => {
                         to='/login'
                         className='font-medium text-black transition-all duration-200 hover:underline'
                     >
-                        Sign In
+                        Log In
                     </Link>
                 </p>
                 <form
@@ -53,110 +105,28 @@ const SignUp = () => {
                     className='mt-8'
                 >
                     <div className='space-y-5'>
-                        <div>
-                            <label
-                                htmlFor='name'
-                                className='text-base font-medium text-gray-900'
-                            >
-                                {' '}
-                                Full Name{' '}
-                            </label>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='text'
-                                    id='name'
-                                    {...register('username', {
-                                        required: 'Username is required',
-                                    })}
-                                    placeholder='Username'
-                                />
-                                {errors.username && (
-                                    <p>{errors.username.message}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor='email'
-                                className='text-base font-medium text-gray-900'
-                            >
-                                {' '}
-                                Email address{' '}
-                            </label>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='email'
-                                    placeholder='Email'
-                                    id='email'
-                                    {...register('email', {
-                                        required: 'Email is required',
-                                    })}
-                                />
-                                {errors.email && <p>{errors.email.message}</p>}
-                            </div>
-                        </div>
-                        <div>
-                            <label
-                                htmlFor='mobile'
-                                className='text-base font-medium text-gray-900'
-                            >
-                                {' '}
-                                Mobile Number{' '}
-                            </label>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='text'
-                                    placeholder='Mobile Number'
-                                    id='mobile'
-                                    {...register('mobile', {
-                                        required: 'Mobile Number is required',
-                                    })}
-                                />
-                                {errors.mobile && (
-                                    <p>{errors.mobile.message}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div>
-                            <div className='flex items-center justify-between'>
-                                <label
-                                    htmlFor='password'
-                                    className='text-base font-medium text-gray-900'
-                                >
-                                    {' '}
-                                    Password{' '}
-                                </label>
-                            </div>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='password'
-                                    placeholder='Password'
-                                    id='password'
-                                    {...register('password', {
-                                        required: 'Password is required',
-                                    })}
-                                />
-                                {errors.password && (
-                                    <p>{errors.password.message}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                type='submit'
-                                className='inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80'
-                            >
-                                Create Account{' '}
-                                <ArrowRight
-                                    className='ml-2'
-                                    size={16}
-                                />
-                            </button>
-                        </div>
+                        {inputTypes?.map((input) => (
+                            <Input
+                                key={input.id}
+                                label={input.label}
+                                id={input.id}
+                                type={input.type}
+                                register={register}
+                                errors={errors}
+                                disabled={isLoading}
+                            />
+                        ))}
+
+                        <button
+                            type='submit'
+                            className='inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80'
+                        >
+                            Create Account{' '}
+                            <ArrowRight
+                                className='ml-2'
+                                size={16}
+                            />
+                        </button>
                     </div>
                 </form>
             </div>

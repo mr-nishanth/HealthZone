@@ -13,7 +13,6 @@ import Home from '../pages/Home';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Profile = lazy(() => import('../pages/Profile'));
-const LogIn = lazy(() => import('../pages/LogIn'));
 
 export const router = createBrowserRouter([
     {
@@ -41,11 +40,9 @@ export const router = createBrowserRouter([
         path: '/login',
         id: 'Login',
         element: (
-            <Suspense fallback={<div>Loading...</div>}>
-                <BaseLayout>
-                    <LogIn />
-                </BaseLayout>
-            </Suspense>
+            <BaseLayout>
+                <LogIn />
+            </BaseLayout>
         ),
         errorElement: <ErrorPage />,
     },

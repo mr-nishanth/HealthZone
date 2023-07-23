@@ -1,22 +1,23 @@
-import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
+import React from 'react';
 
 type Props = {
-    children: JSX.Element;
+    children: React.ReactNode;
 };
 
-const Protected = ({ children }: Props) => {
-    // const [isAuth, setIsAuth] = useState<boolean>(false);
+const ProtectedRoute = ({ children }: Props) => {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const location = useLocation().pathname;
 
-    // return isAuth ? (
-    //     <>{children}</>
-    // ) : (
-    //     <Navigate
-    //         to={`/`}
-    //         state={{ from: location }}
-    //         replace
-    //     />
-    // );
+    return isAuthenticated ? (
+        <>{children}</>
+    ) : (
+        <Navigate
+            to={`/login`}
+            state={{ from: location }}
+            replace
+        />
+    );
 };
-export default Protected;
+export default ProtectedRoute;

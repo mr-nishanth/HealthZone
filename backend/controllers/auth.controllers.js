@@ -22,7 +22,14 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
     user = await User.create({ name: username, email, password, mobile });
 
-    sendToken({ userObj: user, statusCode: 201, response: res });
+    // sendToken({ userObj: user, statusCode: 201, response: res });
+    return res
+        .status(201)
+        .json({
+            message: 'Registration Successful',
+            success: true,
+            userObj: user,
+        });
 });
 
 /**

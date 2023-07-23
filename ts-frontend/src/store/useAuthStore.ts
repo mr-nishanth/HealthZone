@@ -27,6 +27,7 @@ interface AuthAction {
         mobile: string
     ) => Promise<Response>;
     getAllUser: () => Promise<User[]>;
+    deleteUser: (id: string) => Promise<Response>;
 }
 
 const useAuthStore = create<AuthStore & AuthAction>()((set, get) => ({
@@ -148,6 +149,25 @@ const useAuthStore = create<AuthStore & AuthAction>()((set, get) => ({
             }
         } catch (error: any) {
             console.error('Get all User failed:', error);
+            console.log({ error });
+            return error?.response?.data;
+        }
+    },
+
+    deleteUser: async (id: string) => {
+        try {
+            const { data } = await request.delete(
+                `${endpoints.deleteUser}/${id}`
+            );
+            console.log({ DELETE_RESPONSE: data });
+            if (data.success) {
+                let newUsers = get().users!;
+                newUsers = newUsers?.filter((user) => user._id !== id);
+                set((state) => ({ ...state, users: newUsers }));
+                return data;
+            }
+        } catch (error: any) {
+            console.error('Delete User failed:', error);
             console.log({ error });
             return error?.response?.data;
         }

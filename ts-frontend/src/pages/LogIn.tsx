@@ -6,7 +6,7 @@ import useAuthStore from '../store/useAuthStore';
 import Input from '../components/Input';
 import { toast } from 'react-hot-toast';
 import loginSchema from '../schemas/loginSchema';
-
+import { shallow } from 'zustand/shallow';
 const initialValue: LogIn = {
     email: '',
     password: '',
@@ -25,10 +25,6 @@ const inputTypes: InputTypes[] = [
     },
 ];
 const LogIn = () => {
-    const [isAuthenticated, login] = useAuthStore((state) => [
-        state.isAuthenticated,
-        state.login,
-    ]);
     const navigate = useNavigate();
 
     const {
@@ -40,9 +36,14 @@ const LogIn = () => {
         resolver: zodResolver(loginSchema),
     });
 
+    const [isAuthenticated, login] = useAuthStore(
+        (state) => [state.isAuthenticated, state.login],
+        shallow
+    );
     console.log({ isAuthenticated });
     if (isAuthenticated) {
         navigate('/dashboard');
+        return;
     }
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -50,7 +51,7 @@ const LogIn = () => {
         toast.loading('Authenticating... ⌛', { id: '1' });
 
         const result = await login(email, password);
-        // console.log({ LOGIN: result });
+        console.log({ LOGIN: result });
 
         if (result?.success) {
             const message = result?.message ?? 'User login successfully 🚀';
@@ -58,7 +59,13 @@ const LogIn = () => {
 
             navigate('/dashboard');
         } else {
-            const message = result?.message ?? 'Error in while login user 🥲';
+            let message;
+            if (!result.message) {
+                message = result;
+            } else {
+                message = result?.message ?? 'Error in while login user 🥲';
+            }
+
             toast.error(message, {
                 id: '1',
             });

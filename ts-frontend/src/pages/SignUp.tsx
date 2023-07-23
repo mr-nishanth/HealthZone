@@ -76,8 +76,13 @@ const SignUp = () => {
             toast.success(message, { id: '1' });
             navigate('/login');
         } else {
-            const message =
-                result?.message ?? 'Error in while registering user 🥲';
+            let message;
+            if (!result.message) {
+                message = result;
+            } else {
+                message =
+                    result?.message ?? 'Error in while Registering user 🥲';
+            }
 
             toast.error(message, {
                 id: '1',

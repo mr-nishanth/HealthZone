@@ -1,14 +1,19 @@
+import { lazy, Suspense } from 'react';
+
 import { createBrowserRouter } from 'react-router-dom';
 
 import ErrorPage from '../components/ErrorPage';
-import Home from '../pages/Home';
+import ProtectedRoute from '../components/ProtectedRoute';
+
 import BaseLayout from '../layouts/BaseLayout';
+
+import LogIn from '../pages/LogIn';
 import SignUp from '../pages/SignUp';
-import SignUpTs from '../pages/SignUpTs';
-// import LogIn from '../pages/LogIn';
-import LogInTs from '../pages/LogInTs';
-import Dashboard from '../pages/Dashboard';
-import Profile from '../pages/Profile';
+import Home from '../pages/Home';
+
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Profile = lazy(() => import('../pages/Profile'));
+const LogIn = lazy(() => import('../pages/LogIn'));
 
 export const router = createBrowserRouter([
     {
@@ -27,8 +32,7 @@ export const router = createBrowserRouter([
         id: 'SignUp',
         element: (
             <BaseLayout>
-                <SignUpTs />
-                {/* <SignUp /> */}
+                <SignUp />
             </BaseLayout>
         ),
         errorElement: <ErrorPage />,
@@ -37,10 +41,11 @@ export const router = createBrowserRouter([
         path: '/login',
         id: 'Login',
         element: (
-            <BaseLayout>
-                {/* <LogIn /> */}
-                <LogInTs />
-            </BaseLayout>
+            <Suspense fallback={<div>Loading...</div>}>
+                <BaseLayout>
+                    <LogIn />
+                </BaseLayout>
+            </Suspense>
         ),
         errorElement: <ErrorPage />,
     },
@@ -48,9 +53,13 @@ export const router = createBrowserRouter([
         path: '/dashboard',
         id: 'dashboard',
         element: (
-            <BaseLayout>
-                <Dashboard />
-            </BaseLayout>
+            <Suspense fallback={<div>Loading...</div>}>
+                <BaseLayout>
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                </BaseLayout>
+            </Suspense>
         ),
         errorElement: <ErrorPage />,
     },
@@ -58,9 +67,13 @@ export const router = createBrowserRouter([
         path: '/profile',
         id: 'profile',
         element: (
-            <BaseLayout>
-                <Profile />
-            </BaseLayout>
+            <Suspense fallback={<div>Loading...</div>}>
+                <BaseLayout>
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                </BaseLayout>
+            </Suspense>
         ),
         errorElement: <ErrorPage />,
     },

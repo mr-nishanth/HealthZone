@@ -1,36 +1,73 @@
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import useAuthStore from '../store/useAuthStore';
-// import { toast } from 'react-hot-toast';
+import Input from '../components/Input';
+import { toast } from 'react-hot-toast';
+import loginSchema from '../schemas/loginSchema';
 
+const initialValue: LogIn = {
+    email: '',
+    password: '',
+};
+
+const inputTypes: InputTypes[] = [
+    {
+        id: 'email',
+        label: 'Email Address',
+        type: 'email',
+    },
+    {
+        id: 'password',
+        label: 'Password',
+        type: 'password',
+    },
+];
 const LogIn = () => {
+    const [isAuthenticated, login] = useAuthStore((state) => [
+        state.isAuthenticated,
+        state.login,
+    ]);
     const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
-        formState: { errors },
-    } = useForm();
+        formState: { errors, isLoading },
+    } = useForm<FieldValues>({
+        defaultValues: initialValue,
+        resolver: zodResolver(loginSchema),
+    });
 
-    const [login] = useAuthStore((state) => [state.login]);
+    console.log({ isAuthenticated });
+    if (isAuthenticated) {
+        navigate('/dashboard');
+    }
 
-    const onSubmit = async (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const { email, password } = data;
-        const result = await login(email, password);
+        toast.loading('Authenticating... ⌛', { id: '1' });
 
-        console.log({ LOGIN: result });
-        if (result.success) {
-            // toast.success('Login Successful');
+        const result = await login(email, password);
+        // console.log({ LOGIN: result });
+
+        if (result?.success) {
+            const message = result?.message ?? 'User login successfully 🚀';
+            toast.success(message, { id: '1' });
+
             navigate('/dashboard');
         } else {
-            const message = result?.response?.data?.message ?? 'Login error';
-            // toast.error(message);
+            const message = result?.message ?? 'Error in while login user 🥲';
+            toast.error(message, {
+                id: '1',
+            });
         }
     };
 
     return (
-        <div className='h-[79vh] flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-            <div className='xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md'>
+        <div className='h-[83vh] flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+            <div className='bg-slate-100 px-4 py-8 shadow-xl xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md'>
                 <h2 className='text-2xl font-bold leading-tight text-black'>
                     Log in to your account
                 </h2>
@@ -48,50 +85,18 @@ const LogIn = () => {
                     className='mt-8'
                 >
                     <div className='space-y-5'>
-                        <div>
-                            <label
-                                htmlFor=''
-                                className='text-base font-medium text-gray-900'
-                            >
-                                {' '}
-                                Email address{' '}
-                            </label>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='email'
-                                    {...register('email', {
-                                        required: 'Email is required',
-                                    })}
-                                    placeholder='Email address'
-                                />
-                                {errors.email && <p>{errors.email.message}</p>}
-                            </div>
-                        </div>
-                        <div>
-                            <div className='flex items-center justify-between'>
-                                <label
-                                    htmlFor=''
-                                    className='text-base font-medium text-gray-900'
-                                >
-                                    {' '}
-                                    Password{' '}
-                                </label>
-                            </div>
-                            <div className='mt-2'>
-                                <input
-                                    className='flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50'
-                                    type='password'
-                                    {...register('password', {
-                                        required: 'Password is required',
-                                    })}
-                                    placeholder='Password'
-                                />
-                                {errors.password && (
-                                    <p>{errors.password.message}</p>
-                                )}
-                            </div>
-                        </div>
+                        {inputTypes?.map((input) => (
+                            <Input
+                                key={input.id}
+                                label={input.label}
+                                id={input.id}
+                                type={input.type}
+                                register={register}
+                                errors={errors}
+                                disabled={isLoading}
+                            />
+                        ))}
+
                         <div>
                             <button
                                 type='submit'

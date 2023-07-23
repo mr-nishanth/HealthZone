@@ -15,7 +15,7 @@ const endpoints: Endpoints = {
     getProfile: '/api/v1/myprofile',
     updateProfile: '/api/v1/update',
     getAllUser: '/api/v1/admin/users',
-    deleteUser: '/admin/user/:id',
+    deleteUser: '/api/v1/admin/user',
 };
 
 export default endpoints;

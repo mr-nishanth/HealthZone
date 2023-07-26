@@ -11,7 +11,7 @@ const sendToken = require('../utils/jwt');
  */
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     console.log('Register User', req.body);
-    const { name, email, password, mobile } = req.body;
+    const { username, email, password, mobile } = req.body;
 
     //   check if user already exists in the database by email address and return error if it does exist in the database
     let user = await User.findOne({ email }).exec();
@@ -20,9 +20,16 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Email already Exists', 400));
     }
 
-    user = await User.create({ name, email, password, mobile });
+    user = await User.create({ name: username, email, password, mobile });
 
-    sendToken({ userObj: user, statusCode: 201, response: res });
+    // sendToken({ userObj: user, statusCode: 201, response: res });
+    return res
+        .status(201)
+        .json({
+            message: 'Registration Successful',
+            success: true,
+            userObj: user,
+        });
 });
 
 /**
@@ -50,7 +57,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Invalid email or password', 401));
     }
 
-    sendToken({ userObj: user, statusCode: 201, response: res });
+    sendToken({ userObj: user, statusCode: 200, response: res });
 });
 /**
  * @description Logout a user

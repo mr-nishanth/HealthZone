@@ -1,4 +1,13 @@
-export function Hero() {
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
+
+const Home = () => {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const navigate = useNavigate();
+    console.log({ isAuthenticated });
+    if (isAuthenticated) {
+        navigate('/dashboard');
+    }
     return (
         <div className='relative isolate z-0 w-full h-[79vh]  bg-white px-6 pt-14 lg:px-8'>
             <div className='relative mx-auto max-w-2xl py-24'>
@@ -59,4 +68,6 @@ export function Hero() {
             </div>
         </div>
     );
-}
+};
+
+export default Home;

@@ -19,7 +19,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // CORS middleware
-app.use(cors());
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true, //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 // Logger middleware
 app.use(logger('dev'));
@@ -64,9 +69,6 @@ app.use('/$', (req, res) => {
 
 app.use('/api/v1', require('./routes/auth.routes'));
 app.use('/api/v1', require('./routes/user.routes'));
-app.use('/api/v1', require('./routes/products.routes'));
-app.use('/api/v1', require('./routes/order.routes'));
-app.use('/api/v1', require('./routes/payment.routes'));
 
 // 404 page
 app.all('*', (req, res) => {
